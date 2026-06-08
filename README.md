@@ -2,7 +2,7 @@
 
 A Rust implementation of the CAnonize protocol for anonymous surveys, providing simpler assumptions and improved efficiency compared to the state-of-the-art [Anonize](https://eprint.iacr.org/2015/681) protocol. This implementation provides privacy-preserving surveys where users can submit unlinkable responses anonymously while preventing duplicate submissions and preventing submissions from unregistered and unauthorized users.
 
-We also provide an implementation of Anonize for comparison.
+We also provide an implementation of Anonize for comparison. To ensure a fair comparison, the same libraries and optimizations were used for both implementations and no batching techniques were employed that could give an advantage to CAnonize. The proposed implementation of Anonize uses a transform due to Fischlin instead of the less efficient transform due to Pass used in the Anonize paper.
 
 ## Anonymous survey scheme
 
@@ -48,7 +48,7 @@ docker build -t canonize .
 ## 🏃 Usage
 
 ### Running the Protocols
-
+This implementation allows running the CAnonize and Anonize protocols with one registration authority, one survey authority creating one survey and one user submitting one answer.
 #### Run the proposed CAnonize protocol:
 ```bash
 cargo run --release AS
@@ -72,20 +72,20 @@ And the communication cost in bits:
 | ours      | 5,056 | 3,456 |  8,512 | 3,456 |     52,544 |            64,512 |
 
 Where:
-- `RA_setup_time`: Registration Authority key generation
-- `SA_setup_time`: Survey Authority key generation  
-- `User_setup_time`: User initialization
-- `CRS_generation_time`: Common Reference String generation
-- `UR1_time\size`, `UR3_time`: User registration phases for user
-- `UR2_time\size` : User registration for RA
-- `SR_time\size`,: Survey registration
-- `Authorised_time`: Authorization check
-- `Submission_time\size`: Survey submission generation
-- `SubmissionCheck_time`: Submission verification
+- `RA_setup: Registration Authority key generation
+- `SA_setup`: Survey Authority key generation  
+- `User_setup`: User initialization
+- `CRS_generation`: Common Reference String generation
+- `UR1`, `UR3`: User registration phases for user
+- `UR2` : User registration for RA
+- `SR`,: Survey registration
+- `Authorised`: Authorization check
+- `Submission`: Survey submission generation
+- `SubmissionCheck`: Submission verification
 
 ### Running Benchmarks
 
-Execute the benchmark suite for the timing for the following operations: hashing, hash-to-curve in G_1 and G_2, pairing evaluation, multiplication in G_T, exponentiations in G_1 and G_2.
+Execute the benchmark suite for the timing for the following operations: hashing, hash-to-curve in $G_1$ and $G_2$, pairing evaluation, multiplication in $G_T$, exponentiations in $G_1$ and $G_2$.
 ```bash
 cargo bench
 ```
@@ -98,7 +98,7 @@ This implementation uses:
 - **Curve**: BLS12-381 pairing-friendly elliptic curve
 - **Framework**: [arkworks](https://arkworks.rs/) ecosystem for elliptic curve and pairing operations
 - **Cryptographic Primitives**:
-  - Structure-Preserving Signatures (SPS)[1] : implemented
+  - Structure-Preserving Signatures (SPS) : implemented
   - Boneh-Boyen (BB) signatures : implemented
   - Groth-Sahai NIZK proofs : implemented
   - One-Time Signatures (Lamport-Diffie and Pedersen-based): implemented
@@ -118,7 +118,7 @@ We provide a new scheme structure using:
 - a per-submission generated CRS
 - the generic NIZK proof system with Groth--Sahai (GS) proofs which significantly reduces the number of pairing computations required from the user,
 - a structure-preserving signature (SPS) scheme which accommodates efficient GS-based verification instead of the partially blind signature scheme used in Anonize,
-- a \red{Naor--Pinkas--Reigold} PRF which allows the token to be in $G_1$ instead of $G_T$, instead of the the Dodis--Yampolskiy PRF. 
+- the Naor--Pinkas--Reigold PRF which allows the token to be in $G_1$ instead of $G_T$, instead of the the Dodis--Yampolskiy PRF. 
 
 We further modify the user registration and submission steps to guarantee the security of the scheme under the new primitives.
 
@@ -186,7 +186,7 @@ code/
    - Submit anonymous survey responses to SA
    - Generate zero-knowledge proofs of eligibility
 
-### Protocol Flow
+### CAnonize Protocol Flow
 
 1. **System Setup**
    - Initialize pairing groups (BLS12-381)
@@ -202,7 +202,7 @@ code/
 3. **Survey Registration**
    - SA generates survey identifier $vid$
    - SA creates authorization list of eligible users
-   - SA publishes list of signatures on §(vid, pk)$ for authorized participants
+   - SA publishes list of signatures on $(vid, pk)$ for authorized participants
 
 4. **Authorization Check**
    - Verify if a user is authorized for a specific survey through the signature in the list published by the SA
@@ -211,13 +211,17 @@ code/
    - User generates submission with:
      - Survey answer
      - Unlinkable one-time token (prevents duplicate submissions)
+     - Per-submission generated CRS
      - Proofs of:
        - Valid RA credential possession
        - Valid SA credential possession
-       - Correct token formation
+       - Correct token computation
+     - One-time signature on token, answer, survey identifier and all proof elements
+     - One-time public key
 
 6. **Submission Verification**
    - SA verifies all proofs
+   - Verifies the one-time signature
    - Checks for duplicate tokens
    - Accepts or rejects submission
    * This step can be performed by any entity 
@@ -247,8 +251,6 @@ let ots_scheme = OTSignatureSchemeType::P(POTSignatureScheme {});
 ```
 
 
-
-
 ## 🔗 External Resources
 - [Anonize description](https://eprint.iacr.org/2015/681)
 - [arkworks documentation](https://docs.rs/ark-ec/)
@@ -264,9 +266,5 @@ This is a **research prototype** implementation intended for academic evaluation
 
 ## License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
-
-## References
-
-[1] Jutla, Charanjit S., and Arnab Roy. "Improved structure preserving signatures under standard bilinear assumptions." IACR International Workshop on Public Key Cryptography. Berlin, Heidelberg: Springer Berlin Heidelberg, 2017.
+This project is licensed under either the Apache License Version 2.0 ([LICENSE-APACHE](./LICENSE-APACHE)) or theMIT License ([LICENSE-MIT](./LICENSE-MIT)).
 

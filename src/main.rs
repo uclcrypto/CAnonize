@@ -164,8 +164,13 @@ fn main() {
         let mut s_sub=0;
         if (scheme=="AS"){
             let s=submission.as_value();
-            let sp = s.proof.gs_value().gs_value();
-            s_sub = (size_of_val(&submission)+vec_size(&s.pk_commitment)+vec_size(&s.token)+vec_size(&s.ovk)+vec_size(&s.ots)+vec_size(&sp.0)+vec_size(&sp.1)+vec_size(&sp.2)+vec_size(&sp.3)+vec_size(&sp.4))*8;
+            if (submission_proof_type == "GS"){
+                let sp = s.proof.gs_value().gs_value();
+                s_sub = (size_of_val(&submission)+vec_size(&s.pk_commitment)+vec_size(&s.token)+vec_size(&s.ovk)+vec_size(&s.ots)+vec_size(&sp.0)+vec_size(&sp.1)+vec_size(&sp.2)+vec_size(&sp.3)+vec_size(&sp.4))*8;
+            }else if (submission_proof_type=="GSLIB") {
+                let sp = s.proof.gslib_value().gslib_value();
+                s_sub = (size_of_val(&submission)+vec_size(&s.pk_commitment)+vec_size(&s.token)+vec_size(&s.ovk)+vec_size(&s.ots)+vec_size(&sp.0)+vec_size(&sp.1)+vec_size(&sp.2)+vec_size(&sp.3)+vec_size(&sp.4))*8;
+            }
         }else if (scheme =="AN") {
                 let s2= submission.an_value();
                 s_sub = (size_of_val(&submission)+size_of_val(&s2.token)+size_of_val(&s2.s2)+size_of_val(&s2.s4)+size_of_val(&s2.proof)+vec_size(&s2.proof.e1)+vec_size(&s2.proof.e2)+vec_size(&s2.proof.e3)+vec_size(&s2.proof.challenge)+vec_size(&s2.proof.z1)+vec_size(&s2.proof.z2)+vec_size(&s2.proof.z3)+vec_size(&s2.proof.z4))*8;

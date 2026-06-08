@@ -35,18 +35,17 @@ The implementation is provided in Rust (v.1.85.0). The required Rust packages ar
 ### Estimated Time and Storage Consumption 
  
 
-Replace the following with estimated values for:
+The artifact can be run in less than 5 minutes if Rust is already installed.
 
-- The artifact can be run in less than 5 minutes if Rust is already installed.
-- The Github repository takes 2.2 GB and Docker image takes 1.57 GB.
+The Github repository takes around 900 MB and Docker image takes 1.77 GB.
 
 
 
 ## Environment 
 
-### Accessibility (Required for all badges)
+### Accessibility
 
-The artifact is accessible [here](https://github.com/uclcrypto/CAnonize).
+The artifact is accessible here: [https://github.com/uclcrypto/CAnonize](https://github.com/uclcrypto/CAnonize).
 
 ### Set up the environment 
 
@@ -66,12 +65,12 @@ docker build -t canonize .
 
 Check your installation by running the tests.
 ```bash
-cargo test
+cargo test --release
 ```
 For testing the Docker image:
 ```bash
 docker run -it --rm --entrypoint bash canonize
-cargo test
+cargo test --release
 ```
 
 The ten unit tests should pass.
@@ -83,8 +82,9 @@ The ten unit tests should pass.
 
 This Rust implementation allows:
 - running the CAnonize and Anonize protocols
-- measuring the communication and computational cost of each survey step for the CAnonize and Anonize protocols (Tables 2 and 4).
+- measuring the communication and computational costs of each survey step for the CAnonize and Anonize protocols (Tables 2 and 4).
 - measuring the execution time of the most time consuming operations and computing the theoretical communication cost and execution time (Tables 2 and 4).
+
 The results are provided for the BLS12-381 curve.
 
 #### Main Result 1: CAnonize and Anonize protocols implementation
@@ -93,26 +93,15 @@ This implementation allows running the CAnonize and Anonize protocols for a repr
 
 To ensure a fair comparison, we used same libraries and optimizations for both implementations and no batching techniques were employed that could give an advantage to CAnonize. The proposed implementation of Anonize uses a transform due to Fischlin instead of the less efficient transform due to Pass used in the Anonize paper.
 
-
-CAnonize allows reducing the communication
-Describe the results in 1 to 3 sentences. Mention what the independent and
-dependent variables are; independent variables are the ones on the x-axes of
-your figures, whereas the dependent ones are on the y-axes. By varying the
-independent variable (e.g., file size) in a given manner (e.g., linearly), we
-expect to see trends in the dependent variable (e.g., runtime, communication
-overhead) vary in another manner (e.g., exponentially). Refer to the related
-sections, figures, and/or tables in your paper and reference the experiments
-that support this result/claim. See example below.
-
 #### Main Result 2: Communication and computational cost reduction
 
 We claim that the total communication cost is reduced by 92% in CAnonize compared to Anonize. We provide the communication cost of the user registration, survey registration and submission steps for both CAnonize and Anonize protocols, to reproduce Table 2.
 
-We claim that the total communication cost is reduced 59% in CAnonize compared to Anonize. We provide the median execution time on 50 runs of each entity for each survey step, to reproduce Table 4.
+We claim that the total communication cost is reduced by 59% in CAnonize compared to Anonize. We provide the median execution time on 50 runs of each entity for each survey step, to reproduce Table 4.
 
 #### Main Result 3: Operations timing and theoretical evaluation
 
-We provide a benchmark for measuring the execution times of the main operations used in the protocols and provide a script computing the theoretical communication cost by evaluating the size of each communicated element and the expected theoretical execution time by evaluating the number of operations in each step and multiplying them by their execution time.
+We provide a benchmark for measuring the execution times of the main operations used in the protocols and provide a script computing the theoretical communication cost by evaluating the total size of each communicated element and the expected theoretical execution time by evaluating the total number of operations in each step and multiplying them by their execution time.
 
 ### Experiments
 
@@ -125,7 +114,7 @@ For running the Anonize protocol:
 ```bash
 cargo run --release AN
 ```
-The first compilation takes around 20 s and the execution takes less than 1 ms.
+The first compilation takes around 10 s and the execution takes less than 1 s.
 
 The expected output presents the execution time for each survey step in ms and the communication cost for each step in bits (ours for CAnonize, orig. for Anonize, RA for registration authority, SA for survey authority, UR for user registration, SR for survey registration):
 
@@ -163,7 +152,7 @@ The expected output for the communication cost is:
 
 #### Experiment 3: Operation timing and theoretical evaluation 
 
-The theoretical communication size (Table 2) is obtained by computing manually the number of exchanged group elements and multiplying them by the size of each of them on the BLS12-381 curve (Z_q: 255 bits, G_1: 381 bits, G_2: 762 bits, G_T: 4572 bits).
+The theoretical communication size (Table 2) is obtained by computing manually the total number of exchanged group elements and multiplying them by their size on the BLS12-381 curve ($Z_q$: 255 bits, $G_1$: 381 bits, $G_2$: 762 bits, $G_T$: 4572 bits).
 
 The theoretical execution time (Table 4) is obtained by multiplying the number of operations computed in Table 3 by a reference execution time for each operation.
 
@@ -171,12 +160,12 @@ The theoretical execution time (Table 4) is obtained by multiplying the number o
 docker run -it --rm --entrypoint bash canonize
 cargo bench
 ```
-These commands allow benchmarking the following operations over 50 runs (ms): hashing, hash-to-curve in G_1 and G_2, pairing evaluation, multiplication in G_T, exponentiations in G_1 and G_2.
+The previous commands allow benchmarking the following operations over 50 runs (ms): hashing, hash-to-curve in $G_1$ and $G_2$, pairing evaluation, multiplication in $G_T$ and exponentiations in $G_1$ and $G_2$.
 
 The theoretical communication size and execution time can be obtained using the following script.
 ```bash
 docker run -it --rm --entrypoint bash canonize
-python theo_size_time.py
+python3 theo_size_time.py
 ```
 The expected outputs are:
 | Exp_type |     UR |    SR |    Subm | Tot (bit) |
@@ -196,12 +185,12 @@ The theoretical communication and computational costs are computed in less than 
 
 ## Limitations
 
-Table 3 shows the number of hashing, pairing evaluations, multiplications in G_T, exponentiations in G_1 and G_2 for each survey step. Those numbers were computed manually.
+Table 3 shows the number of hashing, pairing evaluations, multiplications in $G_T$, exponentiations in $G_1$ and $G_2$ for each survey step. Those numbers were computed manually.
 
 ## Notes on Reusability
 
-It is possible to change the Groth-Sahai proof implementation by changing the value of the "ur_proof_type" and "submission_proof_type" variables in _main.rs_. _GSLIB_ can be used for using the implementation provided by the *groth-sahai* library and _SCHNORR_ can be used for using the Schnorr proof.
+It is possible to change the Groth-Sahai proof implementation by changing the value of the *ur_proof_type* and *submission_proof_type* variables in _main.rs_. _GSLIB_ can be used for using the implementation provided by the *groth-sahai* library and _Schnorr_ can be used for using the Schnorr proof. Other proof schemes can be implemented and added in the _user_registration1_, _submission_ functions of the _UserTrait_, the _user_registration_2_ function of the registration authority and the _submission_check_ function of the survey authority.
 
-The signature scheme used can be easily replaced by implementing the trait _SignatureScheme_, adding the scheme to the _SignatureSchemeType_ enum and replacing the _signature_scheme_ variable output by the _setup_ function. Similarly, the one-time signature scheme can be replaced by implementing the _OTSignatureScheme_ trait, adding the scheme to the _OTSignatureSchemeType_ and replacing the _ots_scheme_ variable in *main.rs*.
+The signature scheme used can be easily replaced by implementing the _SignatureScheme_ trait, adding the scheme to the _SignatureSchemeType_ enum and replacing the _signature_scheme_ variable output by the _setup_ function. Similarly, the one-time signature scheme can be replaced by implementing the _OTSignatureScheme_ trait, adding the scheme to the _OTSignatureSchemeType_ and replacing the _ots_scheme_ variable in *main.rs*.
 
 
