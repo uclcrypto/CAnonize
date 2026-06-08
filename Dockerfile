@@ -26,6 +26,8 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     && pip3 install pandas --break-system-packages \
     && rm -rf /var/lib/apt/lists/*
+# Cargo registry cache
+COPY --from=builder /usr/local/cargo /usr/local/cargo
 
 COPY --from=builder /app/target /app/target
 COPY --from=builder /app/src ./src
@@ -33,5 +35,6 @@ COPY --from=builder /app/benches ./benches
 COPY --from=builder /app/Cargo.toml /app/Cargo.lock ./
 COPY bench.py bench.sh ./
 RUN chmod +x bench.sh
+COPY theo_size_time.py ./
 
 CMD ["./anonymous_survey"]

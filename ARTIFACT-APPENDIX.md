@@ -119,11 +119,11 @@ We provide a benchmark for measuring the execution times of the main operations 
 #### Experiment 1: CAnonize and Anonize protocols implementation
 For running the CAnonize protocol:
 ``` bash
-cargo run AS
+cargo run --release AS
 ```
 For running the Anonize protocol:
 ```bash
-cargo run AN
+cargo run --release AN
 ```
 The first compilation takes around 20 s and the execution takes less than 1 ms.
 
@@ -198,7 +198,7 @@ The theoretical communication and computational costs are computed in less than 
 
 Table 3 shows the number of hashing, pairing evaluations, multiplications in G_T, exponentiations in G_1 and G_2 for each survey step. Those numbers were computed manually.
 
-## Notes on Reusability (Encouraged for all badges)
+## Notes on Reusability
 
 It is possible to change the Groth-Sahai proof implementation by changing the value of the "ur_proof_type" and "submission_proof_type" variables in _main.rs_. _GSLIB_ can be used for using the implementation provided by the *groth-sahai* library and _SCHNORR_ can be used for using the Schnorr proof.
 

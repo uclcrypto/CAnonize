@@ -51,12 +51,12 @@ docker build -t canonize .
 
 #### Run the proposed CAnonize protocol:
 ```bash
-cargo run AS
+cargo run --release AS
 ```
 
 #### Run the Anonize protocol for comparison:
 ```bash
-cargo run AN
+cargo run --release AN
 ```
 
 ### Output Format
