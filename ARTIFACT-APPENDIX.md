@@ -49,13 +49,14 @@ The artifact is accessible here: [https://github.com/uclcrypto/CAnonize](https:/
 
 ### Set up the environment 
 
-1. Make sure you have a working [Rust installation](https://rust-lang.org/tools/install/).
-2. Clone the repository and build the project
+1. Make sure you have a working [Rust installation](https://rust-lang.org/tools/install/) (v1.85.0 or later).
+2. Install [Python](https://www.python.org/downloads/) (v3.10.12 or later) with [pandas](https://pandas.pydata.org/docs/getting_started/install.html) (v2.1.2 or later) for running the benchmarks.
+3. Clone the repository and build the project
 ```bash
-git clone git@github.com:uclcrypto/CAnonize.git
+git clone git@github.com:uclcrypto/CAnonize.git (or git clone https://github.com/uclcrypto/CAnonize.git)
 cargo build --release
 ```
-3. If you want to run the Docker image provided:
+4. If you want to run the Docker image provided ([Docker 29.4.1 or later](https://docs.docker.com/engine/install)):
 ```bash
 docker build -t canonize .
 ```
@@ -185,7 +186,7 @@ The theoretical communication and computational costs are computed in less than 
 
 ## Limitations
 
-Table 3 shows the number of hashing, pairing evaluations, multiplications in $G_T$, exponentiations in $G_1$ and $G_2$ for each survey step. Those numbers were computed manually.
+Table 3 shows the number of hashing, pairing evaluations, multiplications in $G_T$, exponentiations in $G_1$ and $G_2$ for each survey step. It constitutes an analytical result that is not automatically reproducible using the artifact as those numbers were computed manually.
 
 ## Notes on Reusability
 

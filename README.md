@@ -26,6 +26,8 @@ The Auth() procedure allows checking if a user is authorized to participate in a
 ### Prerequisites
 
 - Rust 1.85 or later (edition 2024). Please refer to [here](https://rust-lang.org/tools/install/) for installing Rust.
+- Python 3.10.12 or later ([installation link](https://www.python.org/downloads/)).
+- pandas 2.1.2 or later ([installation link](https://pandas.pydata.org/docs/getting_started/install.html)).
 - (Docker 29.4.1 or later)
 
 ### Installation
